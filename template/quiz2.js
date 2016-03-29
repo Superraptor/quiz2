@@ -8,36 +8,15 @@
 	"use strict";
 	$(document).ready(function () {
 		
-		function readCookie(name) {
-			var nameEQ = name + "=", ca = document.cookie.split(';'), i, c;
-			for (i = 0; i < ca.length; i += 1) {
-				c = ca[i];
-				while (c.charAt(0) === ' ') {
-					c = c.substring(1, c.length);
-				}
-				if (c.indexOf(nameEQ) === 0) {
-					return c.substring(nameEQ.length, c.length);
-				}
-			}
-			return null;
+		var $mouseover = $('.mouseover'), $click = $('.click'), $submit = $('.submit'), $sendData = $('#sendData'), $changeIt = $('#changeIt'), $keepIt = $('#keepIt'), $prevData = [], $myCookie;
+		
+		console.log(document.cookie);
+		if (document.cookie.length > 0) {
+			$myCookie = document.cookie.split("=")[1];
+			$(".prevData").append("<p>The previous data returned was: " + $myCookie + "</p>");
+			console.log(document.cookie);
+			document.cookie = "";
 		}
-		
-		function createCookie(name, value, days) {
-			var date, expires;
-			if (days) {
-				date = new Date();
-				date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-				expires = "; expires=" + date.toGMTString();
-			} else {
-				expires = "";
-			}
-			document.cookie = name + "=" + value + expires + "; path=/";
-			console.log(document.cookie.split(';'));
-		}
-		
-		console.log(readCookie('myCookie'));
-		
-		var $mouseover = $('.mouseover'), $click = $('.click'), $submit = $('.submit'), $sendData = $('#sendData'), $changeIt = $('#changeIt'), $keepIt = $('#keepIt'), $prevData = [];
 
 		$mouseover.mouseover(function () {
 			var $this = $(this);
@@ -66,8 +45,6 @@
 	
 		$('.content').hide();
 		setTimeout(function () { $('.content').fadeIn('slow'); }, 1000);
-		
-		readCookie('mycookie');
 	
 
 		$sendData.click(function () {
@@ -82,24 +59,16 @@
 					$('#sendData').empty();
 					$('#sendData').html('Change It').removeAttr('id').attr('id', 'changeIt');
 					
+					var $stuff = response, $interestsArray = $stuff.data, $prevData = $interestsArray[Math.floor(Math.random() * $interestsArray.length)];
 					
-					$('.returndata').append('<button id="keepIt" class="myButton">Keep It</button>');
-					
-					var $stuff = response, $interestsArray = $stuff.data, $prevData = $stuff.data;
-					
+					$('.returndata').append("<button class='myButton' onclick = " + '"' + "document.cookie = 'cookie=' + " + "'" + $prevData + "'" + "; location.reload();" + '"' + " type= " + '"' + "button" + '"' +  ">Keep It!</button>");
+							
 					$('.answers').empty();
 					$('.answers').append('<ul class="inner"></ul>');
-					
-					jQuery.each($interestsArray, function (index, value) {
-						$('.answers .inner').append('<li>' + value + '</li>');
-					});
+					$('.answers .inner').append('<li>' + $prevData + '</li>');
 					
 					$keepIt.unbind();
 					$keepIt = $('#keepIt');
-					$keepIt.bind("click", function (event) {
-						createCookie('myCookie', $prevData, 1);
-						console.log(readCookie('myCookie'));
-					});
 					$sendData.unbind();
 					$changeIt = $('#changeIt');
 					$changeIt.bind("click", function (event) {
